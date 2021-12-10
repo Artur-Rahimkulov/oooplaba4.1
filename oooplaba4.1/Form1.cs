@@ -51,7 +51,6 @@ namespace oooplaba4._1
         public int x, y, num;
         public bool isSelected = false;
         public int rad = 20;
-        public int color = 0;
         public CCircle(int x_, int y_)
         {
             x = x_;
@@ -87,26 +86,6 @@ namespace oooplaba4._1
             color = 0;
 
         }
-
-        public void ZalivkaGreen(Form1 sender, Bitmap bmp, Graphics g)
-        {
-            Font font = new Font("Arial", 25, FontStyle.Regular);
-            SolidBrush brush = new SolidBrush(Color.Green);
-            g.FillEllipse(brush, x - rad, y - rad, rad * 2, rad * 2);
-            g.DrawString((num).ToString(), font, Brushes.White, x - 20, y - 20);
-            color = 1;
-
-        }
-        public void ZalivkaRed(Form1 sender, Bitmap bmp, Graphics g)
-        {
-            Font font = new Font("Arial", 25, FontStyle.Regular);
-            SolidBrush brush = new SolidBrush(Color.Red);
-            g.FillEllipse(brush, x - rad, y - rad, rad * 2, rad * 2);
-            g.DrawString((num).ToString(), font, Brushes.White, x - 20, y - 20);
-            color = 2;
-
-        }
-
         public void DrawCircleGreen(int size, Form1 sender, Bitmap bmp, Graphics g)
         {
             Rectangle rect = new Rectangle(x - rad, y - rad, rad * 2, rad * 2);
@@ -116,42 +95,6 @@ namespace oooplaba4._1
             g.DrawEllipse(pen, rect);
             g.DrawString((size + 1).ToString(), font, Brushes.Green, x - 20, y - 20);
             sender.BackgroundImage = bmp;
-        }
-        public void DrawCircleRed(int size, Form1 sender, Bitmap bmp, Graphics g)
-        {
-            Rectangle rect = new Rectangle(x - rad, y - rad, rad * 2, rad * 2);
-            Pen pen = new Pen(Color.Red, 3);
-            Font font = new Font("Arial", 25, FontStyle.Regular);
-            isSelected = true;
-            g.DrawEllipse(pen, rect);
-            g.DrawString((size + 1).ToString(), font, Brushes.Green, x - 20, y - 20);
-            sender.BackgroundImage = bmp;
-        }
-
-        public void DrawLine(int x1, int y1, int x2, int y2, Form1 sender, Bitmap bmp, Graphics g)
-        {
-            Pen p = new Pen(Color.DimGray, 6);
-            Point p1 = new Point(x1, y1);
-            Point p2 = new Point(x2, y2);
-            g.DrawLine(p, p1, p2);
-
-        }
-
-        public void DrawLineGreen(int x1, int y1, int x2, int y2, Form1 sender, Bitmap bmp, Graphics g)
-        {
-            Pen p = new Pen(Color.Green, 6);
-            Point p1 = new Point(x1, y1);
-            Point p2 = new Point(x2, y2);
-            g.DrawLine(p, p1, p2);
-
-        }
-        public void DrawLineRed(int x1, int y1, int x2, int y2, Form1 sender, Bitmap bmp, Graphics g)
-        {
-            Pen p = new Pen(Color.Red, 6);
-            Point p1 = new Point(x1, y1);
-            Point p2 = new Point(x2, y2);
-            g.DrawLine(p, p1, p2);
-
         }
 
         public bool isHit(int x_, int y_)
@@ -168,10 +111,6 @@ namespace oooplaba4._1
         public int GetCoorX()
         {
             return (x);
-        }
-        public int Getcolor()
-        {
-            return color;
         }
         public int GetCoorY()
         {
@@ -235,19 +174,8 @@ namespace oooplaba4._1
             {
                 if (objects[i] != null)
                     objects[i].Zalivka(sender, bmp, g);
-                for (int j = 0; j < size; j++)
-                {
-                    if (arr2[i, j] == 1)
-                    {
-                        dl1 = i;
-                        dl2 = j;
-                        DrawL(sender, bmp, g);
-                    }
-                }
             }
-            dl1 = -1;
-            dl2 = -1;
-            dlc = 0;
+
         }
         public bool isHit(int x, int y, Form1 sender, Bitmap bmp, Graphics g)
         {
@@ -256,30 +184,7 @@ namespace oooplaba4._1
                 if (objects[i] != null)
                     if (objects[i].isHit(x, y))
                     {
-                        if (dl1 == -1)
-                        {
-                            dl1 = i;
-                            dlc++;
-                        }
-                        else
-                        {
-                            dl2 = i;
-                            dlc++;
-                        }
-                        if (dlc == 2)
-                            if (dl1 != dl2)
-                            {
-                                DrawL(sender, bmp, g);
-                                dl1 = -1;
-                                dl2 = -1;
-                                dlc = 0;
-                            }
-                            else
-                            {
-                                dl1 = -1;
-                                dl2 = -1;
-                                dlc = 0;
-                            }
+                        
                         return true;
                     }
             }
