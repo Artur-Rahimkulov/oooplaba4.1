@@ -16,7 +16,7 @@ namespace oooplaba4._1
         {
             InitializeComponent();
         }
-        static int n = 25;
+        static int n = 100;
         Bitmap bmp = new Bitmap(1800, 800);
         MyStorage str = new MyStorage();
 
@@ -44,6 +44,19 @@ namespace oooplaba4._1
                 this.Refresh();
             }
         }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyValue == 46)
+            {
+                Graphics g = Graphics.FromImage(bmp);
+                Form1 pb = (Form1)sender;
+                str.DeleteSelected();
+                g.Clear(Color.White);
+                str.DrawAll(pb, bmp, g);
+                this.Refresh();
+            }
+        }
     }
     public class CCircle
     {
@@ -55,7 +68,7 @@ namespace oooplaba4._1
         {
             x = x_;
             y = y_;
-            color = 0;
+            isSelected = true;
         }
         ~CCircle()
         {
@@ -68,11 +81,7 @@ namespace oooplaba4._1
             Rectangle rect = new Rectangle(x - rad, y - rad, rad * 2, rad * 2);
             Pen pen = new Pen(Color.Black, 8);
             Font font = new Font("Arial", 25, FontStyle.Regular);
-
-            isSelected = true;
             g.DrawEllipse(pen, rect);
-
-            g.DrawString((num).ToString(), font, Brushes.Black, x - 20, y - 20);
             sender.BackgroundImage = bmp;
             Zalivka(sender, bmp, g);
         }
@@ -82,18 +91,13 @@ namespace oooplaba4._1
             Font font = new Font("Arial", 25, FontStyle.Regular);
             SolidBrush brush = new SolidBrush(Color.White);
             g.FillEllipse(brush, x - rad, y - rad, rad * 2, rad * 2);
-            g.DrawString((num).ToString(), font, Brushes.Black, x - 20, y - 20);
-            color = 0;
-
         }
         public void DrawCircleGreen(int size, Form1 sender, Bitmap bmp, Graphics g)
         {
             Rectangle rect = new Rectangle(x - rad, y - rad, rad * 2, rad * 2);
             Pen pen = new Pen(Color.Green, 3);
             Font font = new Font("Arial", 25, FontStyle.Regular);
-            isSelected = true;
             g.DrawEllipse(pen, rect);
-            g.DrawString((size + 1).ToString(), font, Brushes.Green, x - 20, y - 20);
             sender.BackgroundImage = bmp;
         }
 
@@ -116,12 +120,18 @@ namespace oooplaba4._1
         {
             return (y);
         }
+        public void SetSelectedTrue()
+        {
+            isSelected = true;
+        }
+        public void SetSelectedFalse()
+        {
+            isSelected = false;
+        }
     }
 
     public class MyStorage
     {
-        static int[,] arr2 = new int[25, 25];
-
         static public int size = 0;
         static public int dlc = 0;
         static public int x1, x2, y1, y2;
@@ -131,10 +141,7 @@ namespace oooplaba4._1
 
         public MyStorage()
         {
-            objects = new CCircle[25];
-            for (int i = 0; i < 25; i++)
-                for (int j = 0; j < 25; j++)
-                    arr2[i, j] = 0;
+            objects = new CCircle[100];
         }
 
         ~MyStorage()
@@ -144,28 +151,45 @@ namespace oooplaba4._1
 
         public void Drawing(int index, Form1 sender, Bitmap bmp, Graphics g)
         {
-            if (objects[index] != null)
-                objects[index].DrawCircleBlack(size, sender, bmp, g);
+            
+                if (objects[index].isSelected) { 
+                    objects[index].DrawCircleGreen(size, sender, bmp, g);
+                }
+                else  objects[index].DrawCircleBlack(size, sender, bmp, g);
 
         }
 
-
+        public void SetAllSelectedFalse()
+        {
+            for (int i = 0; i < size; i++)
+            {
+                if (objects[i] != null)
+                    objects[i].SetSelectedFalse();
+            }
+        }
+        public void SetSelected(int i)
+        {
+            objects[i].SetSelectedTrue();
+        }
         public int GetSize()
         {
             return (size);
         }
-        public void GetArr(int[,] arr)
+        public void DeleteSelected()
         {
-            for (int i = 0; i < 25; i++)
-                for (int j = 0; j < 25; j++)
-                    arr[i, j] = arr2[i, j];
+            for (int i = 0; i < size; i++)
+            {
+                if (objects[i]!=null)
+                if (objects[i].isSelected)
+                    objects[i]=null;
+            }
         }
         public void Add(CCircle obj, Form1 sender, Bitmap bmp, Graphics g)
         {
+            SetAllSelectedFalse();
             objects[size] = obj;
-
-            Drawing(size, sender, bmp, g);
             size++;
+            DrawAll(sender, bmp, g);            
 
         }
         public void DrawAll(Form1 sender, Bitmap bmp, Graphics g)
@@ -173,7 +197,7 @@ namespace oooplaba4._1
             for (int i = 0; i < size; i++)
             {
                 if (objects[i] != null)
-                    objects[i].Zalivka(sender, bmp, g);
+                    Drawing(i, sender, bmp, g);
             }
 
         }
@@ -184,7 +208,12 @@ namespace oooplaba4._1
                 if (objects[i] != null)
                     if (objects[i].isHit(x, y))
                     {
-                        
+                        if (!(Control.ModifierKeys == Keys.Control))
+                        {
+                            SetAllSelectedFalse();
+                        }
+                        objects[i].SetSelectedTrue();
+                        DrawAll(sender, bmp, g);
                         return true;
                     }
             }
