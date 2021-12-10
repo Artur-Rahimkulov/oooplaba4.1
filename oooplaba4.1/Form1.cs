@@ -215,18 +215,6 @@ namespace oooplaba4._1
         {
             return (size);
         }
-        public int GetColor(int k)
-        {
-            return objects[k].Getcolor();
-        }
-        public void ZalivkaGreen(int index, Form1 sender, Bitmap bmp, Graphics g)
-        {
-            objects[index].ZalivkaGreen(sender, bmp, g);
-        }
-        public void ZalivkaRed(int index, Form1 sender, Bitmap bmp, Graphics g)
-        {
-            objects[index].ZalivkaRed(sender, bmp, g);
-        }
         public void GetArr(int[,] arr)
         {
             for (int i = 0; i < 25; i++)
@@ -239,64 +227,6 @@ namespace oooplaba4._1
 
             Drawing(size, sender, bmp, g);
             size++;
-
-        }
-        public void DrawL(Form1 sender, Bitmap bmp, Graphics g)
-        {
-            x1 = objects[dl1].GetCoorX();
-            y1 = objects[dl1].GetCoorY();
-            x2 = objects[dl2].GetCoorX();
-            y2 = objects[dl2].GetCoorY();
-            objects[0].DrawLine(x1, y1, x2, y2, sender, bmp, g);
-            objects[dl1].Zalivka(sender, bmp, g);
-            objects[dl2].Zalivka(sender, bmp, g);
-            arr2[dl1, dl2] = 1;
-            arr2[dl2, dl1] = 1;
-        }
-        public void DrawLG(Form1 sender, Bitmap bmp, Graphics g)
-        {
-            x1 = objects[dl1].GetCoorX();
-            y1 = objects[dl1].GetCoorY();
-            x2 = objects[dl2].GetCoorX();
-            y2 = objects[dl2].GetCoorY();
-            objects[0].DrawLineGreen(x1, y1, x2, y2, sender, bmp, g);
-            objects[dl1].ZalivkaGreen(sender, bmp, g);
-            objects[dl2].ZalivkaGreen(sender, bmp, g);
-
-        }
-        public void DrawLR(Form1 sender, Bitmap bmp, Graphics g)
-        {
-            x1 = objects[dl1].GetCoorX();
-            y1 = objects[dl1].GetCoorY();
-            x2 = objects[dl2].GetCoorX();
-            y2 = objects[dl2].GetCoorY();
-            objects[0].DrawLineRed(x1, y1, x2, y2, sender, bmp, g);
-            objects[dl1].ZalivkaRed(sender, bmp, g);
-            objects[dl2].ZalivkaRed(sender, bmp, g);
-
-        }
-        public void DrawLR2(int dl1, int dl2, Form1 sender, Bitmap bmp, Graphics g)
-        {
-
-            x1 = objects[dl1].GetCoorX();
-            y1 = objects[dl1].GetCoorY();
-            x2 = objects[dl2].GetCoorX();
-            y2 = objects[dl2].GetCoorY();
-            objects[0].DrawLineRed(x1, y1, x2, y2, sender, bmp, g);
-            objects[dl1].ZalivkaRed(sender, bmp, g);
-            objects[dl2].ZalivkaRed(sender, bmp, g);
-
-        }
-        public void DrawLG2(int dl1, int dl2, Form1 sender, Bitmap bmp, Graphics g)
-        {
-
-            x1 = objects[dl1].GetCoorX();
-            y1 = objects[dl1].GetCoorY();
-            x2 = objects[dl2].GetCoorX();
-            y2 = objects[dl2].GetCoorY();
-            objects[0].DrawLineGreen(x1, y1, x2, y2, sender, bmp, g);
-            objects[dl1].ZalivkaGreen(sender, bmp, g);
-            objects[dl2].ZalivkaGreen(sender, bmp, g);
 
         }
         public void DrawAll(Form1 sender, Bitmap bmp, Graphics g)
@@ -318,48 +248,6 @@ namespace oooplaba4._1
             dl1 = -1;
             dl2 = -1;
             dlc = 0;
-        }
-        public void DLG(int index, Form1 sender, Bitmap bmp, Graphics g)
-        {
-            if (dl1 == -1)
-            {
-                dl1 = index;
-                dlc++;
-            }
-            else
-            {
-                dl2 = index;
-                dlc++;
-            }
-            if (dlc == 2)
-            {
-                DrawLG(sender, bmp, g);
-                dl1 = dl2;
-                dl2 = -1;
-                dlc = 1;
-            }
-
-        }
-        public void DLR(int index, Form1 sender, Bitmap bmp, Graphics g)
-        {
-            if (dl1 == -1)
-            {
-                dl1 = index;
-                dlc++;
-            }
-            else
-            {
-                dl2 = index;
-                dlc++;
-            }
-            if (dlc == 2)
-            {
-                DrawLR(sender, bmp, g);
-                dl1 = dl2;
-                dl2 = -1;
-                dlc = 1;
-            }
-
         }
         public bool isHit(int x, int y, Form1 sender, Bitmap bmp, Graphics g)
         {
