@@ -58,11 +58,10 @@ namespace oooplaba4._1
             }
         }
     }
-    public class CCircle
+    public class CCircle:Figure
     {
 
-        public int x, y, num;
-        public bool isSelected = false;
+        public int num;
         public int rad = 20;
         public CCircle(int x_, int y_)
         {
@@ -75,7 +74,7 @@ namespace oooplaba4._1
 
         }
 
-        public void DrawCircleBlack(int size, Form1 sender, Bitmap bmp, Graphics g)
+        public override void DrawBlack(int size, Form1 sender, Bitmap bmp, Graphics g)
         {
             num = size + 1;
             Rectangle rect = new Rectangle(x - rad, y - rad, rad * 2, rad * 2);
@@ -86,13 +85,13 @@ namespace oooplaba4._1
             Zalivka(sender, bmp, g);
         }
 
-        public void Zalivka(Form1 sender, Bitmap bmp, Graphics g)
+        public override void Zalivka(Form1 sender, Bitmap bmp, Graphics g)
         {
             Font font = new Font("Arial", 25, FontStyle.Regular);
             SolidBrush brush = new SolidBrush(Color.White);
             g.FillEllipse(brush, x - rad, y - rad, rad * 2, rad * 2);
         }
-        public void DrawCircleGreen(int size, Form1 sender, Bitmap bmp, Graphics g)
+        public override void DrawGreen(int size, Form1 sender, Bitmap bmp, Graphics g)
         {
             Rectangle rect = new Rectangle(x - rad, y - rad, rad * 2, rad * 2);
             Pen pen = new Pen(Color.Green, 3);
@@ -101,7 +100,7 @@ namespace oooplaba4._1
             sender.BackgroundImage = bmp;
         }
 
-        public bool isHit(int x_, int y_)
+        public override bool isHit(int x_, int y_)
         {
             if (((x - rad) < x_) && (x + rad > x_) && ((y - rad - rad) < y_) && (y + rad > y_))
             {
@@ -112,24 +111,26 @@ namespace oooplaba4._1
                 return false;
         }
 
-        public int GetCoorX()
-        {
-            return (x);
-        }
-        public int GetCoorY()
-        {
-            return (y);
-        }
-        public void SetSelectedTrue()
-        {
-            isSelected = true;
-        }
-        public void SetSelectedFalse()
-        {
-            isSelected = false;
-        }
-    }
 
+    }
+    public class Figure
+    {
+        public int x, y;
+
+        public bool isSelected = false;
+        public virtual void DrawBlack(int size, Form1 sender, Bitmap bmp, Graphics g) { }
+        
+        public virtual void DrawGreen(int size, Form1 sender, Bitmap bmp, Graphics g) { }
+        public void SetSelectedFalse() { isSelected = false; }
+        public void SetSelectedTrue() { isSelected = true; }
+        public int GetCoorY() { return x; }
+        public int GetCoorX() { return y; }
+        public virtual bool isHit(int x_, int y_) { return false; }
+        public virtual void Zalivka(Form1 sender, Bitmap bmp, Graphics g) { }
+
+
+
+    }
     public class MyStorage
     {
         static public int size = 0;
@@ -137,11 +138,11 @@ namespace oooplaba4._1
         static public int x1, x2, y1, y2;
         static public int dl1 = -1;
         static public int dl2 = -1;
-        static public CCircle[] objects;
+        static public Figure[] objects;
 
         public MyStorage()
         {
-            objects = new CCircle[100];
+            objects = new Figure[1000];
         }
 
         ~MyStorage()
@@ -153,9 +154,9 @@ namespace oooplaba4._1
         {
             
                 if (objects[index].isSelected) { 
-                    objects[index].DrawCircleGreen(size, sender, bmp, g);
+                    objects[index].DrawGreen(size, sender, bmp, g);
                 }
-                else  objects[index].DrawCircleBlack(size, sender, bmp, g);
+                else  objects[index].DrawBlack(size, sender, bmp, g);
 
         }
 
