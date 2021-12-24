@@ -18,7 +18,6 @@ namespace oooplaba4._1
         {
             InitializeComponent();
         }
-        static int n = 100;
         Bitmap bmp = new Bitmap(1800, 800);
 
         MyStorage str = new MyStorage();
@@ -26,8 +25,6 @@ namespace oooplaba4._1
         Form1 a;
         int whattodo = 0;
         int whattopaint = 0;
-        int numberofpointpolygon = 0;
-        PointF[] polygon;
         int modif = 1;
         public Bitmap Image { get; internal set; }
 
@@ -35,11 +32,13 @@ namespace oooplaba4._1
         {
             Form1 pb = (Form1)sender;
             a = pb;
+            str.observers = new System.EventHandler(this.UpdateFromStorage);
         }
 
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
             Graphics g = Graphics.FromImage(bmp);
+            
             Form1 pb = (Form1)sender;
             a = pb;
 
@@ -53,14 +52,6 @@ namespace oooplaba4._1
                     break;
                 case 1:
                     str.Add(new RRectangle(redraw, e.X, e.Y), pb, bmp, g);
-
-
-                    break;
-                case 2:
-
-
-
-
                     break;
                 default:
                     break;
@@ -69,6 +60,7 @@ namespace oooplaba4._1
             g.Clear(Color.White);
             str.DrawAll(pb, bmp, g);
             this.Refresh();
+            str.observers.Invoke(this, null);
 
         }
 
@@ -82,6 +74,7 @@ namespace oooplaba4._1
                 g.Clear(Color.White);
                 str.DrawAll(pb, bmp, g);
                 this.Refresh();
+                str.observers.Invoke(this, null);
             }
         }
 
@@ -132,7 +125,45 @@ namespace oooplaba4._1
         {
             redraw = Color.Blue;
         }
+        public void UpdateFromStorage(object sender, EventArgs e)
+        {
+            treeView1.Nodes.Clear();                
 
+            for(int i = 0; i< str.GetSize();i++)
+            {
+                TreeNode n= new TreeNode();
+                if (str.getFigureFromindex(i) != null)
+                {
+                    treeView1.Nodes.Add(FigureToNode(str.getFigureFromindex(i), n, i));
+
+
+                }
+            }
+        }
+        
+        public TreeNode FigureToNode(Figure a,TreeNode t,int i)
+        {
+            int k = 0;
+            if (a.isSelected) t.Checked = true;
+            TreeNode n = new TreeNode();
+            if (a.isgroup)
+            {
+                
+                t.Text = i + " " + a.ftostring();
+                
+                for (int j = 0; j < a.size; j++)
+                    if (a.objects[j] != null)
+                    {
+                        n = new TreeNode();
+                        k = t.Nodes.Add(FigureToNode(a.objects[j], n, i * 100 + k));
+                    }
+            }
+            else
+            {
+                t.Text = i +" "+a.ftostring();
+            }
+            return t;
+        }
         private void жёлтыйToolStripMenuItem_Click(object sender, EventArgs e)
         {
             redraw = Color.Yellow;
@@ -165,15 +196,7 @@ namespace oooplaba4._1
 
         }
 
-        private void треугольникToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            whattopaint = 2;
-            numberofpointpolygon = 0;
-            polygon = new PointF[3];
-            whattodo = -1;
-
-
-        }
+       
 
         private void moToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -213,6 +236,7 @@ namespace oooplaba4._1
             str.GroupSelected(a, bmp, g);
             str.DrawAll(a, bmp, g);
             this.Refresh();
+            str.observers.Invoke(this, null);
         }
 
         private void разгруппироватьToolStripMenuItem_Click(object sender, EventArgs e)
@@ -224,6 +248,7 @@ namespace oooplaba4._1
             g.Clear(Color.White);
             str.DrawAll(a, bmp, g);
             this.Refresh();
+            str.observers.Invoke(this, null);
         }
 
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
@@ -250,6 +275,54 @@ namespace oooplaba4._1
             str.DrawAll(a, bmp, g);
             this.Refresh();
             
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            
+        }
+
+        private void treeView1_MouseUp(object sender, MouseEventArgs e)
+        {   
+
+        }
+
+        private void treeView1_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in treeView1.Nodes)
+            {
+                //recursiveTotalNodes++;
+                if (n.Checked)
+                {
+                    int j=0;
+                    string s = n.Text;
+                    string x = "";
+                    string y = "";
+                    while(s[j]!=',')
+                    {
+                        j++;
+                    }
+                    j++;
+                    while (s[j] != ',')
+                    {
+                        x += s[j];
+                        j++;
+                    }
+                    j++;
+                    while (s[j] != ')')
+                    {
+                        y += s[j];
+                        j++;
+                    }
+                    str.SelectByCoords(Int32.Parse(x), Int32.Parse(y));
+                    
+                }
+                    
+            }
+            Graphics g = Graphics.FromImage(bmp);
+            g.Clear(Color.White);
+            str.DrawAll(a, bmp, g);
+            this.Refresh();
         }
     }
     public class RRectangle : Figure
@@ -290,12 +363,16 @@ namespace oooplaba4._1
             _file.WriteLine(outer.ToKnownColor());
             _file.WriteLine(inner.ToKnownColor());
         }
+        public override string ftostring()
+        {
+            return "Rectangle(" + outer.ToKnownColor() + "," + x + "," + y + ")";
+        }
         public override void load(StreamReader _file)
         {
             x = Convert.ToInt32(_file.ReadLine());
             y = Convert.ToInt32(_file.ReadLine());
             height = Convert.ToInt32(_file.ReadLine());
-            width = Convert.ToInt32(_file.ReadLine());
+            width = height;
             outer = Color.FromName(_file.ReadLine());
             inner = Color.FromName(_file.ReadLine());
 
@@ -345,6 +422,10 @@ namespace oooplaba4._1
         ~CCircle()
         {
 
+        }
+        public override string ftostring()
+        {
+            return "Circle(" + outer.ToKnownColor() + ","+x+","+y+")";
         }
         public override void save(StreamWriter _file) //сохранение объекта
         {
@@ -445,6 +526,10 @@ namespace oooplaba4._1
         virtual public void save(StreamWriter _file) //сохранение объекта в файл
         {
         }
+        virtual public string ftostring() 
+        {
+            return "";
+        }
         virtual public void load(StreamReader _file) //выгрузка данных об объекте из файла
         {
         }
@@ -480,6 +565,10 @@ namespace oooplaba4._1
             size = 0;
             isgroup = true;
         }
+        public override  string ftostring()
+        {
+            return "Group(" + size + ","+x+","+y+") ";
+        }
 
         public override void SelectDisplay(int lx, int vy, int height, int width)
         {
@@ -494,6 +583,10 @@ namespace oooplaba4._1
         {
             _file.WriteLine("G"); //пишем, что записываемый объект - группа
             _file.WriteLine(size); //записываем размер группы
+            _file.WriteLine(lx);
+            _file.WriteLine(vy);
+            _file.WriteLine(width);
+            _file.WriteLine(height);
             for (int i = 0; i < size; i++)
             {
                 if (objects[i] != null) //если объект существует
@@ -509,7 +602,12 @@ namespace oooplaba4._1
             CFigureFactory factory = new CFigureFactory(); //factory для создания объектов
             char code;  //код, определяюший тип объекта
             size = Convert.ToInt32(_file.ReadLine());
+            lx = Convert.ToInt32(_file.ReadLine());
+            vy = Convert.ToInt32(_file.ReadLine());
+            width = Convert.ToInt32(_file.ReadLine());
+            height = Convert.ToInt32(_file.ReadLine());
             objects = new Figure[size]; //создаем хранилище определенного размера
+
             for (int i = 0; i < size; i++)
             {
                 code = Convert.ToChar(_file.ReadLine()); //считываем тип объекта
@@ -621,7 +719,7 @@ namespace oooplaba4._1
                 pen = new Pen(outer, 1);
             g_.DrawRectangle(pen, rect);
             sender_.BackgroundImage = bmp_;
-            for (int i = 0; i < size + 1; i++)
+            for (int i = 0; i < size ; i++)
             {
                 if (objects[i] != null)
                     objects[i].Draw(sender_, bmp_, g_);
@@ -653,7 +751,6 @@ namespace oooplaba4._1
 
         public override bool isHit(int x, int y)
         {
-            bool selected = false;
             for (int i = 0; i < size; i++)
             {
                 if (objects[i] != null)
@@ -668,11 +765,15 @@ namespace oooplaba4._1
 
 
     }
+    
+    
 
     public class MyStorage
     {
         int size;
+        public System.EventHandler observers;
         static public int dlc = 0;
+        int deleted= 0;
         static public int x1, x2, y1, y2;
         static public int dl1 = -1;
         static public int dl2 = -1;
@@ -718,13 +819,21 @@ namespace oooplaba4._1
                         else
                             objects[i] = null;
             }
+            deleted++;
+        }
+
+        public Figure getFigureFromindex(int i)
+        {
+            if (objects[i] != null)
+                return objects[i];
+            return null;
         }
         public void saveObjs() //функция сохранения хранилища в файл
         {
 
             string path = @"C:\Users\q3032\source\repos\oooplaba4.1\save.txt"; //путь до файла
             StreamWriter cfile = new StreamWriter(path, false); //создаем записыватель файла
-            cfile.WriteLine(size); //записываем размер хранилища
+            cfile.WriteLine(size-deleted); //записываем размер хранилища
             for (int i = 0; i < size; i++)
             {
                 if (objects[i] != null) //если объект существует
@@ -734,6 +843,7 @@ namespace oooplaba4._1
                     }
                 }
             }
+            deleted = 0;
             cfile.Close();
         }
         public void loadObjs() //выгрузка объектов из файла в хранилище
@@ -754,7 +864,16 @@ namespace oooplaba4._1
                 }
             }
             sr.Close(); //закрываем файл
-
+        }
+        public void SelectByCoords(int x, int y)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                if (objects[i] != null)
+                    if ((objects[i].x == x) && (objects[i].y == y))
+                        objects[i].isSelected = true;
+                        
+            }
         }
         public void MoveSelected(int x, int y, Form1 sender, Bitmap bmp, Graphics g)
         {
@@ -767,7 +886,7 @@ namespace oooplaba4._1
         }
         public void GroupSelected(Form1 sender, Bitmap bmp, Graphics g)
         {
-            int lx = 1000, rx = 0, vy = 1000, ny = 0, cx, cy;
+            int lx = 1000, rx = 0, vy = 1000, ny = 0;
             Group gr = new Group();
             for (int i = 0; i < size; i++)
             {
@@ -780,6 +899,7 @@ namespace oooplaba4._1
                         if (vy > objects[i].y - objects[i].height / 2) vy = objects[i].y - objects[i].height / 2;
                         if (ny < objects[i].y + objects[i].height / 2) ny = objects[i].y + objects[i].height / 2;
                         gr.Add(objects[i]);
+                        deleted++;
                         objects[i] = null;
                     }
             }
@@ -788,6 +908,11 @@ namespace oooplaba4._1
             int width = (rx - lx);
             gr.SelectDisplay(lx, vy, height, width);
             Add(gr, sender, bmp, g);
+        }
+        public void SetSelectydByIndex(int i)
+        {
+            SetAllSelectedFalse();
+            objects[i].isSelected = true;
         }
         public void UnGroupSelected(Form1 sender, Bitmap bmp, Graphics g)
         {
@@ -813,7 +938,6 @@ namespace oooplaba4._1
                         else
                             objects[i] = null;
             }
-
         }
 
         public void Add(Figure obj, Form1 sender, Bitmap bmp, Graphics g)
@@ -856,28 +980,23 @@ namespace oooplaba4._1
                             case 1:
                                 objects[i].Setcolorinn(color);
                                 objects[i].Draw(sender, bmp, g);
-
                                 break;
                             case 2:
                                 objects[i].Setcolorout(color);
                                 objects[i].Draw(sender, bmp, g);
-
                                 break;
                             case 3:
                                 objects[i].Setcolorout(color);
                                 objects[i].Setcolorinn(color);
                                 objects[i].Draw(sender, bmp, g);
-
                                 break;
                             case 5:
                                 objects[i].SetScale(modif);
                                 DrawAll(sender, bmp, g);
-
                                 break;
                             case 6:
                                 GroupSelected(sender, bmp, g);
                                 DrawAll(sender, bmp, g);
-
 
                                 break;
                             case 7:
@@ -894,6 +1013,7 @@ namespace oooplaba4._1
                         }
 
                     }
+                    
                 }
             }
 
