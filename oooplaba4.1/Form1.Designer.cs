@@ -49,10 +49,11 @@ namespace oooplaba4._1
             this.moToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.изменитьРазмерToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
+            this.группироватьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.разгруппироватьToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.группироватьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.разгруппироватьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -71,7 +72,8 @@ namespace oooplaba4._1
             this.цветToolStripMenuItem,
             this.moToolStripMenuItem,
             this.изменитьРазмерToolStripMenuItem,
-            this.группироватьToolStripMenuItem});
+            this.группироватьToolStripMenuItem,
+            this.разгруппироватьToolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(982, 28);
@@ -215,7 +217,20 @@ namespace oooplaba4._1
             this.toolStripTextBox1.Name = "toolStripTextBox1";
             this.toolStripTextBox1.Size = new System.Drawing.Size(100, 27);
             this.toolStripTextBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.toolStripTextBox1_KeyDown);
-            this.toolStripTextBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.toolStripTextBox1_KeyUp);
+            // 
+            // группироватьToolStripMenuItem
+            // 
+            this.группироватьToolStripMenuItem.Name = "группироватьToolStripMenuItem";
+            this.группироватьToolStripMenuItem.Size = new System.Drawing.Size(120, 24);
+            this.группироватьToolStripMenuItem.Text = "группировать";
+            this.группироватьToolStripMenuItem.Click += new System.EventHandler(this.группироватьToolStripMenuItem_Click);
+            // 
+            // разгруппироватьToolStripMenuItem1
+            // 
+            this.разгруппироватьToolStripMenuItem1.Name = "разгруппироватьToolStripMenuItem1";
+            this.разгруппироватьToolStripMenuItem1.Size = new System.Drawing.Size(144, 24);
+            this.разгруппироватьToolStripMenuItem1.Text = "разгруппировать";
+            this.разгруппироватьToolStripMenuItem1.Click += new System.EventHandler(this.разгруппироватьToolStripMenuItem_Click);
             // 
             // label1
             // 
@@ -235,27 +250,20 @@ namespace oooplaba4._1
             this.label2.TabIndex = 3;
             this.label2.Text = "label2";
             // 
-            // группироватьToolStripMenuItem
+            // treeView1
             // 
-            this.группироватьToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.разгруппироватьToolStripMenuItem});
-            this.группироватьToolStripMenuItem.Name = "группироватьToolStripMenuItem";
-            this.группироватьToolStripMenuItem.Size = new System.Drawing.Size(120, 24);
-            this.группироватьToolStripMenuItem.Text = "группировать";
-            this.группироватьToolStripMenuItem.Click += new System.EventHandler(this.группироватьToolStripMenuItem_Click);
-            // 
-            // разгруппироватьToolStripMenuItem
-            // 
-            this.разгруппироватьToolStripMenuItem.Name = "разгруппироватьToolStripMenuItem";
-            this.разгруппироватьToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.разгруппироватьToolStripMenuItem.Text = "разгруппировать";
-            this.разгруппироватьToolStripMenuItem.Click += new System.EventHandler(this.разгруппироватьToolStripMenuItem_Click);
+            this.treeView1.Location = new System.Drawing.Point(0, 28);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(228, 444);
+            this.treeView1.TabIndex = 4;
+            this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(982, 484);
+            this.Controls.Add(this.treeView1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.menuStrip1);
@@ -298,7 +306,8 @@ namespace oooplaba4._1
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ToolStripMenuItem группироватьToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem разгруппироватьToolStripMenuItem;
+        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.ToolStripMenuItem разгруппироватьToolStripMenuItem1;
     }
 }
 

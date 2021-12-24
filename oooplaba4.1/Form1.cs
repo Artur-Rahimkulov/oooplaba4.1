@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 namespace oooplaba4._1
 {
-    
+
     public partial class Form1 : Form
     {
         public Form1()
@@ -21,11 +21,12 @@ namespace oooplaba4._1
 
         MyStorage str = new MyStorage();
         Color redraw = Color.Salmon;
+        Form1 a;
         int whattodo = 0;
         int whattopaint = 0;
         int numberofpointpolygon = 0;
         PointF[] polygon;
-        int modif=1;
+        int modif = 1;
         public Bitmap Image { get; internal set; }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -37,34 +38,35 @@ namespace oooplaba4._1
         {
             Graphics g = Graphics.FromImage(bmp);
             Form1 pb = (Form1)sender;
+            a = pb;
 
-            str.isHit(modif,redraw, whattodo, e.X, e.Y, pb, bmp, g);
-                switch (whattopaint)
-                {
-                    case 0:
-                        str.Add(new CCircle(redraw, e.X, e.Y), pb, bmp, g);
+            str.isHit(modif, redraw, whattodo, e.X, e.Y, pb, bmp, g);
+            switch (whattopaint)
+            {
+                case 0:
+                    str.Add(new CCircle(redraw, e.X, e.Y), pb, bmp, g);
 
-                        
-                        break;
-                    case 1:
-                        str.Add(new RRectangle(redraw, e.X, e.Y), pb, bmp, g);
 
-                        
-                        break;
-                    case 2:
-                            
-                            
-                        
-                        
-                        break;
-                    default:
-                        break;
+                    break;
+                case 1:
+                    str.Add(new RRectangle(redraw, e.X, e.Y), pb, bmp, g);
 
-                }
+
+                    break;
+                case 2:
+
+
+
+
+                    break;
+                default:
+                    break;
+
+            }
             g.Clear(Color.White);
             str.DrawAll(pb, bmp, g);
             this.Refresh();
-            
+
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -79,7 +81,6 @@ namespace oooplaba4._1
                 this.Refresh();
             }
         }
-
 
         private void контурToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -178,17 +179,6 @@ namespace oooplaba4._1
 
         }
 
-        private void trackBar1_Scroll(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void toolStripTextBox1_Click(object sender, EventArgs e)
-        {
-           
-
-        }
-
         private void изменитьРазмерToolStripMenuItem_Click(object sender, EventArgs e)
         {
             whattodo = 5;
@@ -196,58 +186,65 @@ namespace oooplaba4._1
 
         }
 
-       
-
-        private void trackBar1_Scroll_1(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void toolStripTextBox1_KeyUp(object sender, KeyEventArgs e)
-        {
-           
-        }
-
         private void toolStripTextBox1_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Enter)
-            { 
-            modif = Int32.Parse(toolStripTextBox1.Text);
-            whattodo = 5;
-            whattopaint = -1;
+            if (e.KeyCode == Keys.Enter)
+            {
+                modif = Int32.Parse(toolStripTextBox1.Text);
+                whattodo = 5;
+                whattopaint = -1;
             }
         }
 
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
-            label1.Text = e.X + ""; 
+            label1.Text = e.X + "";
             label2.Text = e.Y + "";
         }
 
         private void группироватьToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Graphics g = Graphics.FromImage(bmp);
             whattodo = 6;
             whattopaint = -1;
+            str.GroupSelected(a, bmp, g);
+            str.DrawAll(a, bmp, g);
+            this.Refresh();
         }
 
         private void разгруппироватьToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Graphics g = Graphics.FromImage(bmp);
             str.DeleteSelected();
             whattodo = 7;
             whattopaint = -1;
+            g.Clear(Color.White);
+            str.DrawAll(a, bmp, g);
+            this.Refresh();
+        }
+
+        private void treeView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyValue == 46)
+            {
+                Graphics g = Graphics.FromImage(bmp);
+                str.DeleteSelected();
+                g.Clear(Color.White);
+                str.DrawAll(a, bmp, g);
+                this.Refresh();
+            }
         }
     }
     public class RRectangle : Figure
     {
-
-        public int height = 25;
-        public int width = 25;
         public RRectangle(Color color, int x_, int y_)
         {
             x = x_;
             y = y_;
             isSelected = true;
             outer = color;
+            height = 25;
+            width = 25;
         }
         ~RRectangle()
         {
@@ -285,24 +282,18 @@ namespace oooplaba4._1
             else
                 return false;
         }
-        public override void SetScale(int modif) {
-            if ((x + (width / 2 + modif / 2) < 1535) && (y + (width / 2 + modif / 2) < 790) && (x - (width / 2 + modif / 2) > 0) && (y - (width / 2 + modif/2) > 26)) { width += modif; height += modif; }
-        }
-        public override void SetCoords(int x_, int y_) { if ((x_ + width/2 < 1535) && (y_ + width / 2 < 790) && (x_ - width / 2 > 0) && (y_ - width / 2 > 26)) { x = x_; y = y_; } }
-
-        public override Figure clone(RRectangle fg)
+        public override void SetScale(int modif)
         {
-            RRectangle cloned = new RRectangle(fg.outer,fg.GetCoorX(),fg.GetCoorY());
-            cloned.width = fg.width;
-            cloned.height = fg.height;
-            cloned.inner = fg.inner;
-            return cloned;
+            if ((x + (width / 2 + modif / 2) < 1535) && (y + (width / 2 + modif / 2) < 790) && (x - (width / 2 + modif / 2) > 0) && (y - (width / 2 + modif / 2) > 26)) { width += 2 * modif; height += 2 * modif; }
         }
+        public override void SetCoords(int x_, int y_) { if ((x_ + width / 2 < 1535) && (y_ + width / 2 < 790) && (x_ - width / 2 > 0) && (y_ - width / 2 > 26)) { x = x_; y = y_; } }
+
+
 
 
     }
 
-    public class CCircle:Figure
+    public class CCircle : Figure
     {
 
         public int rad = 20;
@@ -312,21 +303,18 @@ namespace oooplaba4._1
             y = y_;
             isSelected = true;
             outer = color;
+            width = rad * 2;
+            height = rad * 2;
+
         }
         ~CCircle()
         {
 
         }
-        public override Figure clone(CCircle fg)
+
+        public override void Draw(Form1 sender, Bitmap bmp, Graphics g)
         {
-            CCircle cloned = new CCircle(fg.outer, fg.GetCoorX(), fg.GetCoorY());
-            cloned.rad = fg.rad;
-            cloned.inner = fg.inner;
-            return cloned;
-        }
-        public override void Draw( Form1 sender, Bitmap bmp, Graphics g)
-        {
-            Rectangle rect = new Rectangle(x -rad, y - rad, rad * 2, rad * 2);
+            Rectangle rect = new Rectangle(x - rad, y - rad, rad * 2, rad * 2);
             Pen pen;
             if (isSelected)
                 pen = new Pen(Color.LightSteelBlue, 8);
@@ -338,7 +326,7 @@ namespace oooplaba4._1
             Zalivka(sender, bmp, g);
 
         }
-        public override void SetCoords(int x_, int y_) { if ((x_ + rad < 1535) && (y_ + rad < 790) &&(x_ - rad > 0) && (y_ - rad >26)) { x = x_; y = y_; } }
+        public override void SetCoords(int x_, int y_) { if ((x_ + rad < 1535) && (y_ + rad < 790) && (x_ - rad > 0) && (y_ - rad > 26)) { x = x_; y = y_; } }
 
         public override void Zalivka(Form1 sender, Bitmap bmp, Graphics g)
         {
@@ -357,39 +345,35 @@ namespace oooplaba4._1
             else
                 return false;
         }
-        public override void SetScale(int modif) {
-            if ((x + (rad+ modif) < 1535) && (y + (rad + modif) < 790) && (x - (rad + modif) > 0) && (y - (rad + modif) > 26)) { rad += modif; }
+        public override void SetScale(int modif)
+        {
+            if ((x + (rad + modif) < 1535) && (y + (rad + modif) < 790) && (x - (rad + modif) > 0) && (y - (rad + modif) > 26))
+            {
+                rad += modif; width = rad * 2;
+                height = rad * 2;
+            }
         }
 
 
     }
     public class Figure
     {
+        public int width;
+        public int height;
         public Figure[] objects;
         public bool grouped = false;
         public int x, y;
         public bool isgroup = false;
         public Color inner = Color.White;
         public Color outer = Color.Black;
-        public virtual Figure clone(Figure fg) 
-        {
-            return null;
-        }
-        public virtual Figure clone(RRectangle fg)
-        {
-            return null;
-        }
-        public virtual Figure clone(CCircle fg)
-        {
-            return null;
-        }
+
         public bool isSelected = false;
-        public virtual void Draw( Form1 sender, Bitmap bmp, Graphics g) { }
+        public virtual void Draw(Form1 sender, Bitmap bmp, Graphics g) { }
         public virtual void SetSelectedFalse() { isSelected = false; }
         public virtual void SetSelectedTrue() { isSelected = true; }
         public int GetCoorY() { return x; }
         public virtual void SetCoords(int x_, int y_) { x = x_; y = y_; }
-        public virtual void SetScale(int modif) {  }
+        public virtual void SetScale(int modif) { }
 
         public int GetCoorX() { return y; }
         public virtual bool isHit(int x_, int y_) { return false; }
@@ -398,29 +382,44 @@ namespace oooplaba4._1
         public virtual void Setcolorinn(Color color) { inner = color; }
 
         public virtual void DeleteSelected() { }
+        public virtual void SelectDisplay(int lx, int vy, int weight, int width) { }
+
 
 
 
     }
-    public class Group :Figure
+    public class Group : Figure
     {
+        PointF[] otn;
         int size = 0;
         MyStorage str;
         Form1 sender;
+        int height, width;
+        int lx, vy;
         Bitmap bmp;
         Graphics g;
-        public Group(MyStorage str_, Form1 sender_,Bitmap bmp_,Graphics g_)
+        public Group(MyStorage str_, Form1 sender_, Bitmap bmp_, Graphics g_)
         {
-            objects = new Figure[1000];
+            objects = new Figure[100];
+            otn = new PointF[100];
             str = str_;
             sender = sender_;
             bmp = bmp_;
             g = g_;
             isgroup = true;
         }
-       
 
-        public override void Setcolorinn(Color color) 
+        public override void SelectDisplay(int lx, int vy, int height, int width)
+        {
+            x = lx + width / 2;
+            y = vy + height / 2;
+            this.height = height;
+            this.width = width;
+            this.lx = lx;
+            this.vy = vy;
+        }
+
+        public override void Setcolorinn(Color color)
         {
             for (int i = 0; i < size; i++)
             {
@@ -429,10 +428,10 @@ namespace oooplaba4._1
                     objects[i].inner = color;
                 }
             }
-             
+
         }
-        
-        public override void Setcolorout(Color color) 
+
+        public override void Setcolorout(Color color)
         {
             for (int i = 0; i < size; i++)
             {
@@ -441,7 +440,7 @@ namespace oooplaba4._1
                     objects[i].outer = color;
                 }
             }
-             
+
         }
 
 
@@ -449,13 +448,23 @@ namespace oooplaba4._1
         {
 
         }
-        
+
         public override void SetScale(int modif)
         {
-            for (int i = 0; i < size; i++)
+            if ((lx + width + modif < 1535) && (vy + height + modif < 790) && (lx - modif > 0) && (vy - modif > 0))
             {
-                if (objects[i] != null)
-                    objects[i].SetScale(modif);
+                for (int i = 0; i < size; i++)
+                {
+                    if (objects[i] != null)
+                        objects[i].SetScale(modif);
+                }
+                lx -= modif;
+                vy -= modif;
+                width += 2 * modif;
+                height += 2 * modif;
+                x = lx + width / 2;
+                y = vy + height / 2;
+
             }
         }
         public override void DeleteSelected()
@@ -470,35 +479,68 @@ namespace oooplaba4._1
         }
         public override void SetCoords(int x_, int y_)
         {
-            for (int i = 0; i < size; i++)
+            if ((x_ + width < 1535) & (y_ + height < 790))
             {
-                if (objects[i] != null)
-                    if (objects[i].isSelected)
+                for (int i = 0; i < size; i++)
+                {
+                    if (objects[i] != null)
                     {
-                        objects[i].SetCoords(objects[i].GetCoorX()+x_, objects[i].GetCoorY() +y_);
-                        g.Clear(Color.White);
-                        Draw(sender, bmp, g);
+                        otn[i].X = objects[i].x - lx;
+                        otn[i].Y = objects[i].y - vy;
                     }
+                }
+
+                lx = x_;
+                x = lx;
+                vy = y_;
+                y = vy;
+                for (int i = 0; i < size; i++)
+                {
+                    if (objects[i] != null)
+                    {
+                        if (objects[i].isgroup)
+                        {
+                            objects[i].SetCoords(Convert.ToInt32(lx + otn[i].X), Convert.ToInt32(vy + otn[i].Y));
+                        }
+                        else
+                        {
+                            objects[i].x = Convert.ToInt32(lx + otn[i].X);
+                            objects[i].y = Convert.ToInt32(vy + otn[i].Y);
+                            g.Clear(Color.White);
+                            Draw(sender, bmp, g);
+                        }
+                    }
+                }
+
             }
+
         }
         public void Add(Figure obj)
         {
             objects[size] = obj;
             size++;
- 
+
 
         }
         public override void Draw(Form1 sender_, Bitmap bmp_, Graphics g_)
         {
-            for (int i = 0; i < size+1; i++)
+            Rectangle rect = new Rectangle(lx, vy, width, height);
+            Pen pen;
+            if (isSelected)
+                pen = new Pen(Color.LightSteelBlue, 1);
+            else
+                pen = new Pen(outer, 1);
+            g.DrawRectangle(pen, rect);
+            sender.BackgroundImage = bmp;
+            for (int i = 0; i < size + 1; i++)
             {
                 if (objects[i] != null)
                     objects[i].Draw(sender_, bmp_, g_);
             }
 
         }
-        public override void SetSelectedFalse() 
-        { 
+        public override void SetSelectedFalse()
+        {
             isSelected = false;
             for (int i = 0; i < size; i++)
             {
@@ -508,8 +550,8 @@ namespace oooplaba4._1
             }
         }
 
-        public override void SetSelectedTrue() 
-        { 
+        public override void SetSelectedTrue()
+        {
             isSelected = true;
             for (int i = 0; i < size; i++)
             {
@@ -580,9 +622,12 @@ namespace oooplaba4._1
                 if (objects[i] != null)
                     if (objects[i].isSelected)
                         if (objects[i].isgroup)
+                        {
                             objects[i].DeleteSelected();
-                else
-                    objects[i]=null;
+                            objects[i] = null;
+                        }
+                        else
+                            objects[i] = null;
             }
         }
         public void MoveSelected(int x, int y, Form1 sender, Bitmap bmp, Graphics g)
@@ -591,70 +636,74 @@ namespace oooplaba4._1
             {
                 if (objects[i] != null)
                     if (objects[i].isSelected)
-                        objects[i].SetCoords(x,y);
+                        objects[i].SetCoords(x, y);
             }
         }
-        public void GroupSelected( Form1 sender, Bitmap bmp, Graphics g)
+        public void GroupSelected(Form1 sender, Bitmap bmp, Graphics g)
         {
-            Group gr = new Group(this,sender,bmp,g);
+            int lx = 1000, rx = 0, vy = 1000, ny = 0, cx, cy;
+            Group gr = new Group(this, sender, bmp, g);
             for (int i = 0; i < size; i++)
             {
                 if (objects[i] != null)
                     if (objects[i].isSelected)
                     {
+
+                        if (lx > objects[i].x - objects[i].width / 2) lx = objects[i].x - objects[i].width / 2;
+                        if (rx < objects[i].x + objects[i].width / 2) rx = objects[i].x + objects[i].width / 2;
+                        if (vy > objects[i].y - objects[i].height / 2) vy = objects[i].y - objects[i].height / 2;
+                        if (ny < objects[i].y + objects[i].height / 2) ny = objects[i].y + objects[i].height / 2;
                         gr.Add(objects[i]);
-                        objects[i]=null;
+                        objects[i] = null;
                     }
             }
+            MessageBox.Show(" " + lx + " " + rx + " " + vy + " " + ny + " " + " " + " ");
+            int height = (ny - vy);
+            int width = (rx - lx);
+            gr.SelectDisplay(lx, vy, height, width);
             Add(gr, sender, bmp, g);
         }
-        
-        public void Add( Figure obj, Form1 sender, Bitmap bmp, Graphics g)
+
+        public void Add(Figure obj, Form1 sender, Bitmap bmp, Graphics g)
         {
             SetAllSelectedFalse();
             objects[size] = obj;
             size++;
-            DrawAll(sender, bmp, g);         
+            DrawAll(sender, bmp, g);
 
         }
         public void DrawAll(Form1 sender, Bitmap bmp, Graphics g)
         {
             for (int i = 0; i < size; i++)
             {
-                if ((objects[i] != null)&&(!objects[i].grouped))
+                if ((objects[i] != null) && (!objects[i].grouped))
                     objects[i].Draw(sender, bmp, g);
             }
 
         }
-        public void isHit(int modif,Color color,int whattodo,int x, int y, Form1 sender, Bitmap bmp, Graphics g)
+        public void isHit(int modif, Color color, int whattodo, int x, int y, Form1 sender, Bitmap bmp, Graphics g)
         {
             for (int i = 0; i < size; i++)
             {
                 if (objects[i] != null)
                 {
-                    if ((whattodo == 4)&&(objects[i].isSelected))
-                        if(objects[i].isgroup)
-                        {
-                            int bx = x - objects[i].x;
-                            int by = y - objects[i].y;
-                            objects[i].SetCoords(bx, by);
-                        }else
+                    if ((whattodo == 4) && (objects[i].isSelected))
                         MoveSelected(x, y, sender, bmp, g);
                     if (objects[i].isHit(x, y))
                     {
-                        switch (whattodo) 
+                        switch (whattodo)
                         {
                             case 0:
                                 if (!(Control.ModifierKeys == Keys.Control))
                                 {
                                     SetAllSelectedFalse();
-                                   }
+                                }
                                 objects[i].SetSelectedTrue();
                                 DrawAll(sender, bmp, g);
                                 break;
                             case 1:
                                 objects[i].Setcolorinn(color);
-                                objects[i].Draw( sender, bmp, g);
+                                objects[i].Draw(sender, bmp, g);
 
                                 break;
                             case 2:
@@ -674,17 +723,17 @@ namespace oooplaba4._1
 
                                 break;
                             case 6:
-                                GroupSelected(sender,bmp,g);
+                                GroupSelected(sender, bmp, g);
                                 DrawAll(sender, bmp, g);
 
 
                                 break;
                             case 7:
-                                if (objects[i].isgroup) 
-                                { 
-                                objects[i].DeleteSelected();
-                                objects[i] = null;
-                                DrawAll(sender, bmp, g);
+                                if (objects[i].isgroup)
+                                {
+                                    objects[i].DeleteSelected();
+                                    objects[i] = null;
+                                    DrawAll(sender, bmp, g);
                                 }
 
                                 break;
@@ -692,11 +741,11 @@ namespace oooplaba4._1
                             default:
                                 break;
                         }
-                        
+
                     }
                 }
             }
-            
+
         }
 
 
