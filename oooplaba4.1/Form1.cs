@@ -141,6 +141,7 @@ namespace oooplaba4._1
             }
         }
         
+
         public TreeNode FigureToNode(Figure a,TreeNode t,int i)
         {
             int k = 0;
@@ -317,12 +318,49 @@ namespace oooplaba4._1
                     str.SelectByCoords(Int32.Parse(x), Int32.Parse(y));
                     
                 }
+                else
+                {
+                    int j = 0;
+                    string s = n.Text;
+                    string x = "";
+                    string y = "";
+                    while (s[j] != ',')
+                    {
+                        j++;
+                    }
+                    j++;
+                    while (s[j] != ',')
+                    {
+                        x += s[j];
+                        j++;
+                    }
+                    j++;
+                    while (s[j] != ')')
+                    {
+                        y += s[j];
+                        j++;
+                    }
+                    str.UnSelectByCoords(Int32.Parse(x), Int32.Parse(y));
+                }
                     
             }
             Graphics g = Graphics.FromImage(bmp);
             g.Clear(Color.White);
             str.DrawAll(a, bmp, g);
             this.Refresh();
+        }
+
+        private void кругToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+           
+        }
+
+        private void липкийToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Graphics g = Graphics.FromImage(bmp);
+            str.ClaySelected(a, bmp, g);
+            str.observers.Invoke(this, null);
+
         }
     }
     public class RRectangle : Figure
@@ -340,7 +378,6 @@ namespace oooplaba4._1
         {
 
         }
-
         public override void Draw(Form1 sender, Bitmap bmp, Graphics g)
         {
             Rectangle rect = new Rectangle(x - width / 2, y - height / 2, width, height);
@@ -401,7 +438,26 @@ namespace oooplaba4._1
         public override void SetCoords(int x_, int y_) { if ((x_ + width / 2 < 1535) && (y_ + width / 2 < 790) && (x_ - width / 2 > 0) && (y_ - width / 2 > 26)) { x = x_; y = y_; } }
 
 
+        public override PointF[] GetPoints()
+        {
+            PointF[] f = new PointF[10000];
+            int k = 0;
+            for (int i = 0; i < 10000; i++)
+            {
+                f[i].X = -1;
+                f[i].Y = -1;
+            }
+            for (int i = x - width/2; i < x + width/2; i++)
+                for (int j = y - height/2; j < y + height/2; j++)
+                    if (isHit(i, j))
+                    {
+                        f[k].X = i;
+                        f[k].Y = j;
+                        k++;
+                    }
+            return f;
 
+        }
 
     }
 
@@ -485,9 +541,30 @@ namespace oooplaba4._1
                 height = rad * 2;
             }
         }
+        public override PointF[] GetPoints() 
+        {
+            PointF[] f = new PointF[10000];
+            for (int i = 0; i < 10000; i++)
+            {
+                f[i].X = -1;
+                f[i].Y = -1;
+            }
+                int k = 0;
+            for(int i = x-rad; i<x+rad; i++)
+                for(int j = y-rad; j<y+rad;j++)
+                    if(isHit(i,j))
+                    {
+                        f[k].X = i;
+                        f[k].Y = j;
+                        k++;
+                    }
+            return f;
+
+        }
 
 
     }
+
     class CFigureFactory
     {
         public Figure CreateFigure(char code)
@@ -496,13 +573,16 @@ namespace oooplaba4._1
             switch (code)
             {
                 case 'C':
-                    figure = new CCircle(Color.Black,0,0);
+                    figure = new CCircle(Color.Black, 0, 0);
                     break;
                 case 'R':
-                    figure = new RRectangle( Color.Black,0,0);
+                    figure = new RRectangle(Color.Black, 0, 0);
                     break;
                 case 'G':
                     figure = new Group();
+                    break;
+                case 'L':
+                    figure = new Clayed();
                     break;
                 default:
                     break;
@@ -511,9 +591,58 @@ namespace oooplaba4._1
             return figure;
         }
     }
+    public class Clayed : Figure
+    {
+        public Clayed()
+        {
+            isclayed = true;
+        }
+        override public void save(StreamWriter _file) //сохранение объекта в файл
+        {
+            _file.WriteLine("L"); //пишем, что записываемый объект - липкий
+            clayed.save(_file); //сохраняем его
+        }
+        override public void load(StreamReader _file) //выгрузка данных об объекте из файла
+        {
+            CFigureFactory factory = new CFigureFactory(); //factory для создания объектов
+            char code;  //код, определяюший тип объекта
+            code = Convert.ToChar(_file.ReadLine()); //считываем тип объекта
+            clayed = factory.CreateFigure(code); //factory создает объект определенного типа
+            if (clayed != null)
+            {
+                clayed.load(_file); //считываем информацию о объекте из файла
+            }
+        }
+        override public string ftostring()
+        {
+            return "clayed"+clayed.ftostring();
+        }
+        public override void Draw(Form1 sender, Bitmap bmp, Graphics g) { clayed.Draw(sender, bmp, g); }
+        public override bool isHit(int x_, int y_) { return clayed.isHit(x_,y_); }
+        public override void SetSelectedTrue() {isSelected = true; clayed.isSelected = true; }
+        public override void SetSelectedFalse() { isSelected = false; clayed.isSelected = false; }
+        public override PointF[] GetPoints() { return clayed.GetPoints(); }
+        public override void SetCoords(int x_, int y_) 
+        { 
+            x = x_; y = y_;
+            clayed.x = x;
+            clayed.y = y;
+        }
 
+
+
+
+    }
     public class Figure
     {
+        public System.EventHandler observers;
+        public void selectclayed(Figure a) 
+        { 
+            clayed = a;
+            x = clayed.x;
+            y = clayed.y;
+        }
+        public Figure clayed = null;
         public int width;
         public int height;
         public int size;
@@ -521,10 +650,14 @@ namespace oooplaba4._1
         public bool grouped = false;
         public int x, y;
         public bool isgroup = false;
+        public bool isclayed = false;
+
         public Color inner = Color.White;
         public Color outer = Color.Black;
+        public virtual PointF[] GetPoints() { return null; }
         virtual public void save(StreamWriter _file) //сохранение объекта в файл
         {
+
         }
         virtual public string ftostring() 
         {
@@ -537,11 +670,11 @@ namespace oooplaba4._1
         public virtual void Draw(Form1 sender, Bitmap bmp, Graphics g) { }
         public virtual void SetSelectedFalse() { isSelected = false; }
         public virtual void SetSelectedTrue() { isSelected = true; }
-        public int GetCoorY() { return x; }
+        public int GetCoorY() { return y; }
         public virtual void SetCoords(int x_, int y_) { x = x_; y = y_; }
         public virtual void SetScale(int modif) { }
 
-        public int GetCoorX() { return y; }
+        public int GetCoorX() { return x; }
         public virtual bool isHit(int x_, int y_) { return false; }
         public virtual void Zalivka(Form1 sender, Bitmap bmp, Graphics g) { }
         public virtual void Setcolorout(Color color) { outer = color; }
@@ -557,6 +690,7 @@ namespace oooplaba4._1
     public class Group : Figure
     {
         PointF[] otn;
+
         int lx, vy;
         public Group()
         {
@@ -871,18 +1005,100 @@ namespace oooplaba4._1
             {
                 if (objects[i] != null)
                     if ((objects[i].x == x) && (objects[i].y == y))
-                        objects[i].isSelected = true;
+                        objects[i].SetSelectedTrue();
                         
             }
         }
-        public void MoveSelected(int x, int y, Form1 sender, Bitmap bmp, Graphics g)
+        public void UnSelectByCoords(int x, int y)
         {
             for (int i = 0; i < size; i++)
             {
                 if (objects[i] != null)
-                    if (objects[i].isSelected)
-                        objects[i].SetCoords(x, y);
+                    if ((objects[i].x == x) && (objects[i].y == y))
+                        objects[i].SetSelectedFalse();
+
             }
+        }
+
+        public void MoveSelected(int x, int y, Form1 sender, Bitmap bmp, Graphics g)
+        {
+            int lx = 1000, rx = 0, vy = 1000, ny = 0;
+            int counter = 0;
+            for (int i = 0; i < size; i++)
+            {
+                if (objects[i] != null)
+                    if (objects[i].isSelected)
+                    {
+
+                        if (lx > objects[i].x - objects[i].width / 2) lx = objects[i].x - objects[i].width / 2;
+                        if (rx < objects[i].x + objects[i].width / 2) rx = objects[i].x + objects[i].width / 2;
+                        if (vy > objects[i].y - objects[i].height / 2) vy = objects[i].y - objects[i].height / 2;
+                        if (ny < objects[i].y + objects[i].height / 2) ny = objects[i].y + objects[i].height / 2;
+                        counter++;
+                    }
+            }
+            int height = (ny - vy);
+            int width = (rx - lx);
+            PointF[] otn = new PointF[100];
+
+            if ((x + width < 1535) & (y + height < 790))
+            {
+                for (int i = 0; i < size; i++)
+                {
+                    if (objects[i] != null)
+                    {
+                        if (objects[i].isSelected)
+                        {
+                            otn[i].X = objects[i].x - lx;
+                            otn[i].Y = objects[i].y - vy;
+                            counter++;
+                        }
+                        
+                    }
+                }
+                for (int i = 0; i < size; i++)
+                {
+                    if (objects[i] != null)
+                    {
+                        if (objects[i].isSelected)
+                        {
+                            if (objects[i].isgroup)
+                            {
+                                objects[i].SetCoords(Convert.ToInt32(x + otn[i].X), Convert.ToInt32(y + otn[i].Y));
+                            }
+                            else
+                            {
+                                if (objects[i].isclayed)
+                                {
+                                    objects[i].SetCoords(Convert.ToInt32(x + otn[i].X), Convert.ToInt32(y + otn[i].Y));
+                                }
+                                else
+                                {
+                                    objects[i].x = Convert.ToInt32(x + otn[i].X);
+                                    objects[i].y = Convert.ToInt32(y + otn[i].Y);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+
+        }
+        public void ClaySelected(Form1 sender, Bitmap bmp, Graphics g)
+        {
+            Clayed cl = new Clayed();
+            for (int i = 0; i < size; i++)
+            {
+                if (objects[i] != null)
+                    if (objects[i].isSelected)
+                    {
+                        cl.selectclayed(objects[i]);
+                        objects[i] = null;
+                        deleted++;
+                    }
+            }
+            Add(cl, sender, bmp, g);
         }
         public void GroupSelected(Form1 sender, Bitmap bmp, Graphics g)
         {
@@ -957,6 +1173,30 @@ namespace oooplaba4._1
             }
 
         }
+        public void SelectIsHit(int x, int y)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                if (objects[i] != null)
+                {
+                    if (objects[i].isHit(x, y))
+                    {
+                        objects[i].isSelected = true;
+                    }
+
+                }
+            }
+
+        }
+        public void SelectWithClayed(int i)
+        {
+            PointF[] points = objects[i].clayed.GetPoints();
+            while (points[i].X > 0)
+            {
+                SelectIsHit(Convert.ToInt32(points[i].X), Convert.ToInt32(points[i].Y));
+                i++;
+            }
+        }
         public void isHit(int modif, Color color, int whattodo, int x, int y, Form1 sender, Bitmap bmp, Graphics g)
         {
             for (int i = 0; i < size; i++)
@@ -964,7 +1204,11 @@ namespace oooplaba4._1
                 if (objects[i] != null)
                 {
                     if ((whattodo == 4) && (objects[i].isSelected))
+                    {
+                        if (objects[i].isclayed)
+                            SelectWithClayed(i);
                         MoveSelected(x, y, sender, bmp, g);
+                    }
                     if (objects[i].isHit(x, y))
                     {
                         switch (whattodo)

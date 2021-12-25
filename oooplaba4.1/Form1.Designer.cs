@@ -53,6 +53,7 @@ namespace oooplaba4._1
             this.разгруппироватьToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.сохранитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.загрузитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.липкийToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -77,10 +78,11 @@ namespace oooplaba4._1
             this.группироватьToolStripMenuItem,
             this.разгруппироватьToolStripMenuItem1,
             this.сохранитьToolStripMenuItem,
-            this.загрузитьToolStripMenuItem});
+            this.загрузитьToolStripMenuItem,
+            this.липкийToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1138, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1222, 28);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -250,6 +252,13 @@ namespace oooplaba4._1
             this.загрузитьToolStripMenuItem.Text = "загрузить";
             this.загрузитьToolStripMenuItem.Click += new System.EventHandler(this.загрузитьToolStripMenuItem_Click);
             // 
+            // липкийToolStripMenuItem
+            // 
+            this.липкийToolStripMenuItem.Name = "липкийToolStripMenuItem";
+            this.липкийToolStripMenuItem.Size = new System.Drawing.Size(74, 24);
+            this.липкийToolStripMenuItem.Text = "липкий";
+            this.липкийToolStripMenuItem.Click += new System.EventHandler(this.липкийToolStripMenuItem_Click);
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -284,7 +293,7 @@ namespace oooplaba4._1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1138, 552);
+            this.ClientSize = new System.Drawing.Size(1222, 550);
             this.Controls.Add(this.treeView1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -332,6 +341,7 @@ namespace oooplaba4._1
         private System.Windows.Forms.ToolStripMenuItem разгруппироватьToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem сохранитьToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem загрузитьToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem липкийToolStripMenuItem;
     }
 }
 
